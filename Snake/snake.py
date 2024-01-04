@@ -14,10 +14,56 @@ class SNAKE():
         self.direction = Vector2(1,0)
         self.new_block = False
 
+        self.body_vertical = game.image.load("Snake/Images/snake_body_ver.png").convert_alpha()
+        self.body_horizontal = game.image.load("Snake/Images/snake_body_hor.png").convert_alpha()
+
+        self.head_up = game.image.load("Snake/Images/snake_head_up.png").convert_alpha()
+        self.head_down = game.image.load("Snake/Images/snake_head_down.png").convert_alpha()
+        self.head_left = game.image.load("Snake/Images/snake_head_left.png").convert_alpha()
+        self.head_right = game.image.load("Snake/Images/snake_head_right.png").convert_alpha()
+
+        self.tail_up = game.image.load("Snake/Images/snake_tail_up.png").convert_alpha()
+        self.tail_down = game.image.load("Snake/Images/snake_tail_down.png").convert_alpha()
+        self.tail_left = game.image.load("Snake/Images/snake_tail_left.png").convert_alpha()
+        self.tail_right = game.image.load("Snake/Images/snake_tail_right.png").convert_alpha()
+
     def draw_snake(self):
-        for block in self.body:
-            block_rect = game.Rect(int(block.x*cell_size), int(block.y*cell_size), cell_size, cell_size)
-            game.draw.rect(screen, (183,111,122) , block_rect)
+        self.update_head_graphics()
+        self.update_tail_graphics()
+
+        for index,block in enumerate(self.body):
+            x_pos = block.x*cell_size
+            y_pos = block.y*cell_size
+            block_rect = game.Rect(x_pos, y_pos, cell_size, cell_size)
+
+            if index == 0 :
+                screen.blit(self.head, block_rect)
+
+            elif index == len(self.body)-1 :
+                screen.blit(self.tail, block_rect)
+            else:
+                game.draw.rect(screen, (150,100,100), block_rect)
+
+
+
+        #for block in self.body:
+        #    block_rect = game.Rect(int(block.x*cell_size), int(block.y*cell_size), cell_size, cell_size)
+        #    screen.blit(snake_png, block_rect)
+    def update_head_graphics(self):
+        head_relation = self.body[1] - self.body[0]
+        
+        if head_relation == right: self.head = self.head_left
+        elif head_relation == left: self.head = self.head_right
+        elif head_relation == up: self.head = self.head_down
+        elif head_relation == down: self.head = self.head_up
+
+    def update_tail_graphics(self):
+        tail_relation = self.body[-2] - self.body[-1]
+        
+        if tail_relation == right: self.tail = self.tail_left
+        elif tail_relation == left: self.tail = self.tail_right
+        elif tail_relation == up: self.tail = self.tail_down
+        elif tail_relation == down: self.tail = self.tail_up
 
     def move_snake(self):
         if self.new_block == True:
@@ -94,7 +140,7 @@ down = Vector2(0, 1)
 
 screen = game.display.set_mode((cell_number*cell_size,cell_number*cell_size)) ## Define our screen
 clock = game.time.Clock() ## Define a clock object to use time methods
-apple = game.image.load("Images/Apple.png").convert_alpha() ## Made my own sprite for this 
+apple = game.image.load("Snake/Images/Apple.png").convert_alpha() ## Made my own sprite for this 
 
 SCREEN_UPDATE = game.USEREVENT
 game.time.set_timer(SCREEN_UPDATE, 150)
