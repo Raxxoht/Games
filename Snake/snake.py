@@ -16,6 +16,10 @@ class SNAKE():
 
         self.body_vertical = game.image.load("Snake/Images/snake_body_ver.png").convert_alpha()
         self.body_horizontal = game.image.load("Snake/Images/snake_body_hor.png").convert_alpha()
+        self.body_tl = game.image.load("Snake/Images/snake_body_tl.png").convert_alpha()
+        self.body_bl = game.image.load("Snake/Images/snake_body_bl.png").convert_alpha()
+        self.body_tr = game.image.load("Snake/Images/snake_body_tr.png").convert_alpha()
+        self.body_br = game.image.load("Snake/Images/snake_body_br.png").convert_alpha()
 
         self.head_up = game.image.load("Snake/Images/snake_head_up.png").convert_alpha()
         self.head_down = game.image.load("Snake/Images/snake_head_down.png").convert_alpha()
@@ -42,7 +46,24 @@ class SNAKE():
             elif index == len(self.body)-1 :
                 screen.blit(self.tail, block_rect)
             else:
-                game.draw.rect(screen, (150,100,100), block_rect)
+                previous_block = self.body[index+1] - block 
+                next_block = self.body[index -1 ] - block 
+                if previous_block.x == next_block.x :
+                    screen.blit(self.body_vertical, block_rect)
+                elif previous_block.y == next_block.y :
+                    screen.blit(self.body_horizontal, block_rect)
+                else:
+                    if next_block.x == -1 and previous_block.y == -1 or next_block.y == -1 and previous_block.x == -1:
+                        screen.blit(self.body_tl, block_rect)
+                    elif next_block.x == -1 and previous_block.y == 1 or next_block.y == 1 and previous_block.x == -1:
+                        screen.blit(self.body_bl, block_rect)
+                    elif next_block.x == 1 and previous_block.y == -1 or next_block.y == -1 and previous_block.x == 1:
+                        screen.blit(self.body_tr, block_rect)
+                    elif next_block.x == 1 and previous_block.y == 1 or next_block.y == 1 and previous_block.x == 1:
+                        screen.blit(self.body_br, block_rect)
+
+                    
+
 
 
 
