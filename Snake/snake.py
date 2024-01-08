@@ -16,6 +16,10 @@ class SNAKE():
 
         self.body_vertical = game.image.load("Snake/Images/snake_body_ver.png").convert_alpha()
         self.body_horizontal = game.image.load("Snake/Images/snake_body_hor.png").convert_alpha()
+        self.body_tl = game.image.load("Snake/Images/snake_body_tl.png").convert_alpha()
+        self.body_bl = game.image.load("Snake/Images/snake_body_bl.png").convert_alpha()
+        self.body_tr = game.image.load("Snake/Images/snake_body_tr.png").convert_alpha()
+        self.body_br = game.image.load("Snake/Images/snake_body_br.png").convert_alpha()
 
         self.head_up = game.image.load("Snake/Images/snake_head_up.png").convert_alpha()
         self.head_down = game.image.load("Snake/Images/snake_head_down.png").convert_alpha()
@@ -42,7 +46,24 @@ class SNAKE():
             elif index == len(self.body)-1 :
                 screen.blit(self.tail, block_rect)
             else:
-                game.draw.rect(screen, (150,100,100), block_rect)
+                previous_block = self.body[index+1] - block 
+                next_block = self.body[index -1 ] - block 
+                if previous_block.x == next_block.x :
+                    screen.blit(self.body_vertical, block_rect)
+                elif previous_block.y == next_block.y :
+                    screen.blit(self.body_horizontal, block_rect)
+                else:
+                    if next_block.x == -1 and previous_block.y == -1 or next_block.y == -1 and previous_block.x == -1:
+                        screen.blit(self.body_tl, block_rect)
+                    elif next_block.x == -1 and previous_block.y == 1 or next_block.y == 1 and previous_block.x == -1:
+                        screen.blit(self.body_bl, block_rect)
+                    elif next_block.x == 1 and previous_block.y == -1 or next_block.y == -1 and previous_block.x == 1:
+                        screen.blit(self.body_tr, block_rect)
+                    elif next_block.x == 1 and previous_block.y == 1 or next_block.y == 1 and previous_block.x == 1:
+                        screen.blit(self.body_br, block_rect)
+
+                    
+
 
 
 
@@ -107,14 +128,13 @@ class Main(): ## Main logic engine
         self.check_fail()
 
     def draw_elements(self):
+        self.draw_grass()
         self.snake.draw_snake()
         self.fruit.draw_fruit()
+        self.draw_score()
 
     def check_collision(self):
         if self.fruit.pos == self.snake.body[0]:
-            print('"Tasty"')
-            self.score += 1
-            print("Score = ", self.score)
             self.snake.add_block()
             self.fruit.newPos()
 
@@ -131,6 +151,33 @@ class Main(): ## Main logic engine
         game.quit()
         sys.exit()
 
+    def draw_grass(self):
+        grass_color = (167,209,61)
+        for row in range(cell_number):
+            if row % 2 == 0:
+                for col in range(cell_number):
+                    if col % 2 == 0:
+                        grass_rect = game.Rect(col*cell_size,row * cell_size,cell_size,cell_size)
+                        game.draw.rect(screen, grass_color, grass_rect)
+            else:
+                for col in range(cell_number):
+                    if col % 2 != 0:
+                        grass_rect = game.Rect(col*cell_size,row * cell_size,cell_size,cell_size)
+                        game.draw.rect(screen, grass_color, grass_rect)
+
+    def draw_score(self):
+        score_text = " = " + str(len(self.snake.body) - 3)
+        score_surface = game_font.render(score_text, True, (56,74,12))
+        score_x = int(cell_size*cell_number)/2
+        score_y = int(cell_size)
+        score_rect = score_surface.get_rect(center = (score_x, score_y))
+        apple_rect = apple.get_rect(midright = (score_rect.left, score_rect.centery))
+        bg_rect = game.Rect(apple_rect.left-4, apple_rect.top-2, apple_rect.width + score_rect.width + 6, apple_rect.height+4)
+
+        game.draw.rect(screen, (167,209,61), bg_rect)
+        game.draw.rect(screen, (56,74,12), bg_rect, 2)
+        screen.blit(score_surface, score_rect)
+        screen.blit(apple, apple_rect)
 cell_size = 20
 cell_number = 20
 right = Vector2(1, 0) ## Define vectors for each direction
@@ -141,6 +188,7 @@ down = Vector2(0, 1)
 screen = game.display.set_mode((cell_number*cell_size,cell_number*cell_size)) ## Define our screen
 clock = game.time.Clock() ## Define a clock object to use time methods
 apple = game.image.load("Snake/Images/Apple.png").convert_alpha() ## Made my own sprite for this 
+game_font = game.font.Font(None, 25)
 
 SCREEN_UPDATE = game.USEREVENT
 game.time.set_timer(SCREEN_UPDATE, 150)
