@@ -128,6 +128,7 @@ class Main(): ## Main logic engine
         self.check_fail()
 
     def draw_elements(self):
+        self.draw_grass()
         self.snake.draw_snake()
         self.fruit.draw_fruit()
 
@@ -151,6 +152,20 @@ class Main(): ## Main logic engine
     def game_over(self):
         game.quit()
         sys.exit()
+
+    def draw_grass(self):
+        grass_color = (167,209,61)
+        for row in range(cell_number):
+            if row % 2 == 0:
+                for col in range(cell_number):
+                    if col % 2 == 0:
+                        grass_rect = game.Rect(col*cell_size,row * cell_size,cell_size,cell_size)
+                        game.draw.rect(screen, grass_color, grass_rect)
+            else:
+                for col in range(cell_number):
+                    if col % 2 != 0:
+                        grass_rect = game.Rect(col*cell_size,row * cell_size,cell_size,cell_size)
+                        game.draw.rect(screen, grass_color, grass_rect)
 
 cell_size = 20
 cell_number = 20
