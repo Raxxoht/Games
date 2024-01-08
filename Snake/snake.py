@@ -135,9 +135,6 @@ class Main(): ## Main logic engine
 
     def check_collision(self):
         if self.fruit.pos == self.snake.body[0]:
-            print('"Tasty"')
-            self.score += 1
-            print("Score = ", self.score)
             self.snake.add_block()
             self.fruit.newPos()
 
@@ -169,12 +166,18 @@ class Main(): ## Main logic engine
                         game.draw.rect(screen, grass_color, grass_rect)
 
     def draw_score(self):
-        score_text = str(len(self.snake.body) - 3)
+        score_text = " = " + str(len(self.snake.body) - 3)
         score_surface = game_font.render(score_text, True, (56,74,12))
         score_x = int(cell_size*cell_number)/2
         score_y = int(cell_size)
         score_rect = score_surface.get_rect(center = (score_x, score_y))
+        apple_rect = apple.get_rect(midright = (score_rect.left, score_rect.centery))
+        bg_rect = game.Rect(apple_rect.left-4, apple_rect.top-2, apple_rect.width + score_rect.width + 6, apple_rect.height+4)
+
+        game.draw.rect(screen, (167,209,61), bg_rect)
+        game.draw.rect(screen, (56,74,12), bg_rect, 2)
         screen.blit(score_surface, score_rect)
+        screen.blit(apple, apple_rect)
 cell_size = 20
 cell_number = 20
 right = Vector2(1, 0) ## Define vectors for each direction
