@@ -131,6 +131,7 @@ class Main(): ## Main logic engine
         self.draw_grass()
         self.snake.draw_snake()
         self.fruit.draw_fruit()
+        self.draw_score()
 
     def check_collision(self):
         if self.fruit.pos == self.snake.body[0]:
@@ -167,6 +168,13 @@ class Main(): ## Main logic engine
                         grass_rect = game.Rect(col*cell_size,row * cell_size,cell_size,cell_size)
                         game.draw.rect(screen, grass_color, grass_rect)
 
+    def draw_score(self):
+        score_text = str(len(self.snake.body) - 3)
+        score_surface = game_font.render(score_text, True, (56,74,12))
+        score_x = int(cell_size*cell_number)/2
+        score_y = int(cell_size)
+        score_rect = score_surface.get_rect(center = (score_x, score_y))
+        screen.blit(score_surface, score_rect)
 cell_size = 20
 cell_number = 20
 right = Vector2(1, 0) ## Define vectors for each direction
@@ -177,6 +185,7 @@ down = Vector2(0, 1)
 screen = game.display.set_mode((cell_number*cell_size,cell_number*cell_size)) ## Define our screen
 clock = game.time.Clock() ## Define a clock object to use time methods
 apple = game.image.load("Snake/Images/Apple.png").convert_alpha() ## Made my own sprite for this 
+game_font = game.font.Font(None, 25)
 
 SCREEN_UPDATE = game.USEREVENT
 game.time.set_timer(SCREEN_UPDATE, 150)
