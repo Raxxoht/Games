@@ -3,3 +3,5 @@
 ### Some from tutorials, some from free thinking
 
 ##### For now there is snake, all sprites made in paint 3D
+
+##### Tetris has now been added, bit shoddy and needs some tweaking. Snake also needs some fine refurbishing 
