@@ -36,6 +36,7 @@ class Main:
         self.current_piece = Tetromino(random.choice(Shapes))
         self.next_piece = Tetromino(random.choice(Shapes))
         self.score = 0
+        self.game_over = False
 
 
     def draw_score(self):
@@ -97,6 +98,11 @@ class Main:
             for x, cell in enumerate(row):
                 if cell:
                     self.grid[self.current_piece.y + y][self.current_piece.x + x] = self.current_piece.color
+
+        for x in range(columns): # Game over check
+            if self.grid[0][x] != (0, 0, 0):
+                self.game_over = True
+                break
         return self.clear_lines()
  
     def valid_space(self, shape, offset):
@@ -111,7 +117,7 @@ class Main:
         return True
     
     def run(self):
-        while True:
+        while not self.game_over:
             self.display_surface.fill((0, 0, 0))
             self.fall_time += self.clock.get_rawtime()
             self.clock.tick()
