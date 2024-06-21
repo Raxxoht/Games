@@ -35,12 +35,8 @@ class Player:
     
     def updatePosition(self, dt):
             
-        if player_speed - abs(self.dx) > speedStopMargin:
-            self.dx = 0
-        elif player_speed - abs(self.dy) > speedStopMargin:
-            self.dy = 0
-        self.x += self.dx * dt
-        self.y += self.dy * dt
+        self.x += self.dx * dt * target_fps
+        self.y += self.dy * dt * target_fps
         self.dx = self.dx * (1-friction)
         self.dy = self.dy * (1-friction)
 

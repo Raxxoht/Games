@@ -7,11 +7,11 @@ window_height = 500
 
 # Player settings
 player_size = Vector2(15,20)
-player_speed = 20
+player_speed = 10
 player_color = (255,255,255)
-speedStopMargin = 0.05
+speedStopMargin = 0.01
 
 # Physics
 friction = 0.05
-fps = 10
-target_fps = 30
+fps = 30
+target_fps = 10
