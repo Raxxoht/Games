@@ -53,21 +53,23 @@ class Player:
                 self.y = max(0, min(self.y, window_height))
                 self.dy = -self.dy
 
-    def shoot(self, surface):
-        bullet = Bullet()
-        bullet.draw_Bullet(surface, (0,0))
+    def shoot(self, bullets):
+        bullet = Bullet(self.x, self.y, self.angle)
+        bullets.append(bullet)
 
 class Bullet:
-    def __init__(self):
-        self.radius = 3
-        self.speed=1
-        self.x = 0
-        self.y = 0
-        self.dx=0
-        self.dy=0
+    def __init__(self, x, y, angle):
+        self.radius = 5
+        self.speed= 10
+        self.x = x
+        self.y = y
+        self.angle = angle
+        angle_radians = math.radians(angle)
+        self.dx = self.speed * math.sin(angle_radians)
+        self.dy = -self.speed * math.cos(angle_radians)
     
-    def draw_Bullet(self, surface, center):
-        pygame.draw.circle(surface, bullet_color, center,self.radius)
+    def draw_Bullet(self, surface):
+        pygame.draw.circle(surface, bullet_color, (int(self.x), int(self.y)),self.radius)
 
     def updateBulletPosition(self, dt):
         self.x += self.dx * dt * target_fps
@@ -81,6 +83,7 @@ class Main:
         self.screen = pygame.display.set_mode((window_width, window_height))
         self.prev_time = time.time()
         self.bg = pygame.image.load("Asteroids/Graphics/background.png")
+        self.bullets = []
 
     def run(self):
         clock.tick(fps)
@@ -92,7 +95,6 @@ class Main:
             now = time.time()
             dt = now - self.prev_time
             self.prev_time = now
-            pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -108,11 +110,14 @@ class Main:
                         player.dy +=( player_speed)
                     elif event.key == pygame.K_SPACE:
                         print("PEW!")
-                        player.shoot(self.screen)
+                        player.shoot(self.bullets)
             player.checkCollision()
             player.updatePosition(dt)
             player.updateRotation()
-
+            for bullet in self.bullets:
+                bullet.updateBulletPosition(dt)
+                bullet.draw_Bullet(self.screen)
+            pygame.display.update()
 
 
 main = Main()
