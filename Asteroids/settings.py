@@ -9,6 +9,7 @@ window_height = 500
 player_size = Vector2(15,20)
 player_speed = 10
 player_color = (255,255,255)
+bullet_color = (255,255,255)
 speedStopMargin = 0.01
 
 # Physics
