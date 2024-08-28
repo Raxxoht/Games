@@ -1,5 +1,6 @@
 import pygame as game
 import sys
+import random as rand
 
 from config import window_x, window_y, physics_speed, fps
 
@@ -10,18 +11,30 @@ class Atom:
 
 class Molecule:
     def __init__(self):
-        pass
+        self.molecules = ["Water", "CarbonDioxide", "Methane", "Ethanol", "Glucose"]
+        self.combinations = {"Water": ["Hydrogen", "Hydrogen", "Oxygen"],
+                             "CarbonDioxide": ["Carbon", "Oxygen", "Oxygen"],
+                             "Ethanol": ["Carbon", "Carbon", "Oxygen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen",  "Hydrogen"],
+                             "Glucose": ["Carbon", "Carbon", "Carbon", "Carbon", "Carbon", "Carbon", "Oxygen", "Oxygen", "Oxygen",  "Oxygen", "Oxygen", "Oxygen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen",  "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen"]
+        }
+        self.curMol = self.molecules[rand.randint(0,len(self.molecules)-1)]
+
+    def newMol(self):
+        self.curMol = self.molecules[rand.randint(0,len(self.molecules)-1)]
 
 class Main: # Class definition of the main program.
     def __init__(self): # Starts on initialization of an object
         
         game.init()
+        self.molecule = Molecule()
         self.screen = game.display.set_mode((window_x, window_y))
         game.display.set_caption("Moleculez")
-        self.fontM = game.font.SysFont("Arial", 48)
-        self.fontS = game.font.SysFont("Arial", 32)
+        self.fontM = game.font.SysFont("Arial", 48) # Define a game font variable
+        self.fontS = game.font.SysFont("Arial", 24)
 
-        self.state = "Menu"
+        self.state = "Menu" # Set a base state for the main menu
+
+        self.clock = game.time.Clock()
     
     def quit(self): # Quits the game and exits the window
         game.quit()
@@ -56,6 +69,10 @@ class Main: # Class definition of the main program.
 
             self.screen.fill("black")
             self.eventHandler()
+
+            game_text = self.fontM.render(self.molecule.curMol, True, (50, 205, 50))
+            game_rect = game_text.get_rect(center=(window_x // 2, window_y // 2))
+            self.screen.blit(game_text, game_rect)
             self.update()
 
 
@@ -68,9 +85,13 @@ class Main: # Class definition of the main program.
                 if self.state == "Menu":
                     self.state = "Game"
                     self.game()
+                if self.state == "Game":
+                    self.molecule.newMol()
+    
 
     def update(self): # Main update functions. Updates variables such as: Positions, speeds and object lists
-        game.display.flip() 
+        game.display.flip()
+        self.clock.tick(fps)
 
 if __name__ == "__main__":  # Main instantiator
     Main = Main()
