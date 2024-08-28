@@ -51,7 +51,7 @@ class Main: # Class definition of the main program.
             moleculez_text = self.fontM.render("Moleculez!", True, (255, 0, 255))
             press_text = self.fontS.render("Press any key to start", True, (255,255,255))
 
-            welcome_rect = welcome_text.get_rect(center=(window_x // 2 - 120, window_y // 2))
+            welcome_rect = welcome_text.get_rect(center=(window_x // 2 - 110, window_y // 2))
             to_rect = to_text.get_rect(center=(window_x // 2, window_y // 2))
             moleculez_rect = moleculez_text.get_rect(center=(window_x // 2 + 120, window_y // 2))
             press_rect = press_text.get_rect(center=(window_x // 2, window_y//2 + 200))
@@ -71,7 +71,7 @@ class Main: # Class definition of the main program.
             self.eventHandler()
 
             game_text = self.fontM.render(self.molecule.curMol, True, (50, 205, 50))
-            game_rect = game_text.get_rect(center=(window_x // 2, window_y // 2))
+            game_rect = game_text.get_rect(center=(window_x // 2, window_y // 6))
             self.screen.blit(game_text, game_rect)
             self.update()
 
@@ -83,8 +83,15 @@ class Main: # Class definition of the main program.
                 self.quit()
             if e.type == game.KEYDOWN:
                 if self.state == "Menu":
-                    self.state = "Game"
-                    self.game()
+                    if e.key == game.K_ESCAPE:
+                        self.state = False
+                        self.quit()
+                    else:
+                        self.state = "Game"
+                        self.game()
+                if e.key == game.K_ESCAPE:
+                    self.state = "Menu"
+                    self.mainMenu()
                 if self.state == "Game":
                     self.molecule.newMol()
     
