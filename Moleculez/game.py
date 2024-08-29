@@ -82,15 +82,19 @@ class Main: # Class definition of the main program.
             self.screen.blit(moleculez_text, moleculez_rect)
             self.screen.blit(press_text, press_rect)
 
+            game.draw.rect(self.screen,(255,255,255), press_rect.inflate(100,100), 4)
+
             self.update()
 
     def game(self):
         game.display.set_caption("Game")
         self.score = 0
         self.selAtom = "None"
+        self.gameScreen = game.Rect(window_x // 2 - 300, window_y // 2 -100,window_x // 3 + 50,window_y // 2)
 
         self.atom1Button = Button(window_x - 200, window_y // 4, "blue", "green", "Hydrogen", self.fontM, "Hydrogen")
         self.atom2Button = Button(window_x - 200, window_y // 2, "blue", "green", "Oxygen", self.fontM, "Oxygen")
+        self.atom3Button = Button(window_x - 200, window_y // 1.33, "blue", "green", "Carbon", self.fontM, "Carbon")
 
         while self.state == "Game":
 
@@ -109,8 +113,16 @@ class Main: # Class definition of the main program.
             # Buttons and blitting
             self.atom1Button.update(self.screen)
             self.atom2Button.update(self.screen)
+            self.atom3Button.update(self.screen)
 
+            game.draw.rect(self.screen,(0,210,0), score_rect.inflate(100,100), 4)
+            game.draw.rect(self.screen,(200,200,200), game_rect.inflate(200,100), 4)
+            game.draw.rect(self.screen,(200,200,200), self.atom2Button.rect.inflate(200, window_y // 1.5), 4)
+            game.draw.rect(self.screen,(200,200,200), self.gameScreen.inflate(200,100), 4)
+            
 
+            for button in [self.atom1Button, self.atom2Button, self.atom3Button]:
+                game.draw.rect(self.screen,(100,200,100), button.rect.inflate(100, 100), 4)
 
 
             self.update()
@@ -148,13 +160,16 @@ class Main: # Class definition of the main program.
                     self.molecule.newMol()
                     
                 if e.type == game.MOUSEBUTTONDOWN:
-                    for button in [self.atom1Button, self.atom2Button]:
+                    for button in [self.atom1Button, self.atom2Button, self.atom3Button]:
                         button.handleClick(e, self.selectAtom)
     
 
     def update(self): # Main update functions. Updates variables such as: Positions, speeds and object lists
         game.display.flip()
         self.clock.tick(fps)
+
+    def handeClick(self):
+        mouse_pos = game.mouse.get_pos()
 
 if __name__ == "__main__":  # Main instantiator
     Main = Main()
