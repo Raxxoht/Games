@@ -14,22 +14,22 @@ class SNAKE():
         self.direction = Vector2(1,0)
         self.new_block = False
 
-        self.body_vertical = game.image.load("Snake/Images/snake_body_ver.png").convert_alpha()
-        self.body_horizontal = game.image.load("Snake/Images/snake_body_hor.png").convert_alpha()
-        self.body_tl = game.image.load("Snake/Images/snake_body_tl.png").convert_alpha()
-        self.body_bl = game.image.load("Snake/Images/snake_body_bl.png").convert_alpha()
-        self.body_tr = game.image.load("Snake/Images/snake_body_tr.png").convert_alpha()
-        self.body_br = game.image.load("Snake/Images/snake_body_br.png").convert_alpha()
+        self.body_vertical = game.image.load("Games/Snake/Images/snake_body_ver.png").convert_alpha()
+        self.body_horizontal = game.image.load("Games/Snake/Images/snake_body_hor.png").convert_alpha()
+        self.body_tl = game.image.load("Games/Snake/Images/snake_body_tl.png").convert_alpha()
+        self.body_bl = game.image.load("Games/Snake/Images/snake_body_bl.png").convert_alpha()
+        self.body_tr = game.image.load("Games/Snake/Images/snake_body_tr.png").convert_alpha()
+        self.body_br = game.image.load("Games/Snake/Images/snake_body_br.png").convert_alpha()
 
-        self.head_up = game.image.load("Snake/Images/snake_head_up.png").convert_alpha()
-        self.head_down = game.image.load("Snake/Images/snake_head_down.png").convert_alpha()
-        self.head_left = game.image.load("Snake/Images/snake_head_left.png").convert_alpha()
-        self.head_right = game.image.load("Snake/Images/snake_head_right.png").convert_alpha()
+        self.head_up = game.image.load("Games/Snake/Images/snake_head_up.png").convert_alpha()
+        self.head_down = game.image.load("Games/Snake/Images/snake_head_down.png").convert_alpha()
+        self.head_left = game.image.load("Games/Snake/Images/snake_head_left.png").convert_alpha()
+        self.head_right = game.image.load("Games/Snake/Images/snake_head_right.png").convert_alpha()
 
-        self.tail_up = game.image.load("Snake/Images/snake_tail_up.png").convert_alpha()
-        self.tail_down = game.image.load("Snake/Images/snake_tail_down.png").convert_alpha()
-        self.tail_left = game.image.load("Snake/Images/snake_tail_left.png").convert_alpha()
-        self.tail_right = game.image.load("Snake/Images/snake_tail_right.png").convert_alpha()
+        self.tail_up = game.image.load("Games/Snake/Images/snake_tail_up.png").convert_alpha()
+        self.tail_down = game.image.load("Games/Snake/Images/snake_tail_down.png").convert_alpha()
+        self.tail_left = game.image.load("Games/Snake/Images/snake_tail_left.png").convert_alpha()
+        self.tail_right = game.image.load("Games/Snake/Images/snake_tail_right.png").convert_alpha()
 
     def draw_snake(self):
         self.update_head_graphics()
@@ -187,7 +187,7 @@ down = Vector2(0, 1)
 
 screen = game.display.set_mode((cell_number*cell_size,cell_number*cell_size)) ## Define our screen
 clock = game.time.Clock() ## Define a clock object to use time methods
-apple = game.image.load("Snake/Images/Apple.png").convert_alpha() ## Made my own sprite for this 
+apple = game.image.load("Games/Snake/Images/Apple.png").convert_alpha() ## Made my own sprite for this 
 game_font = game.font.Font(None, 25)
 
 SCREEN_UPDATE = game.USEREVENT
