@@ -36,7 +36,7 @@ class AtomHandler: # Keeps track of atoms and creates new atoms
         self.aList.append(obj)
         self.inc = self.inc+1
 
-    def updateAtom(self, screen, surface):
+    def updateAtom(self, screen, surface, bind1, bind2, mH, rm):
         for atom in self.aList:
             if atom.x_pos + atom.dx - aSize <= screen.left or atom.x_pos + atom.dx + aSize >= screen.right:
                 atom.dx = -(atom.dx)
@@ -44,36 +44,66 @@ class AtomHandler: # Keeps track of atoms and creates new atoms
                 atom.dy = -(atom.dy)
             atom.x_pos += atom.dx
             atom.y_pos += atom.dy
-        self.handleCollisions(surface)
+        self.handleCollisions(surface, bind1, bind2, mH, rm)
 
     def drawAtoms(self, screen):
         for atom in self.aList:
             game.draw.circle(screen, atom.color, (atom.x_pos, atom.y_pos), aSize)
 
-    def handleCollisions(self, surface):
+    def handleCollisions(self, surface, bind1, bind2, mh, rm):
         for atom in self.aList:
             atom.update_position()
             tmpList = self.aList.copy()
+            typeList = []
             tmpList.remove(atom)
+            if bind1 != "None" and bind2 != "None":
+                tmpList.remove(bind1) if bind1 in tmpList else None
+                tmpList.remove(bind2) if bind2 in tmpList else None
             rects = [a.rect for a in tmpList]
-            if atom.rect.collidelist(rects) >=0:
+            if atom.rect.collidelist(rects) >=0 and atom != bind1:
                 if math.isclose(0, atom.dx):
                     atom.dx = rand.randint(-2,2)
                 color = "Red"
                 atom.dx = -atom.dx
                 atom.dy = -atom.dy
+            elif bind1.rect.colliderect(bind2.rect) if bind1 != "None" and bind2 != "None" else None:
+                print("MOLECULE MADE")
+                self.aList.remove(bind1)
+                self.aList.remove(bind2)
+                mh.createMol([bind1.type, bind2.type],(bind1.x_pos + bind2.x_pos) // 2, (bind1.y_pos + bind2.y_pos) // 2)
+                color = "Blue"
+                rm()
+                print(mh.mList[0].atomList)
             else:
                 color = "Green"
             if Hitboxes == "Enabled":
                 game.draw.rect(surface, color, atom.rect)
 
 class Molecule:
-    def __init__(self):
-        self.atomList = []
-        self.x_pos = 0
-        self.y_pos = 0
-        self.dx = 0
-        self.dy = 0
+    def __init__(self, atoms, x , y):
+        self.atomList = atoms
+        self.centerx = x
+        self.centery = y
+        self.color = "Purple"
+        self.dx = rand.randint(-2,2)
+        self.dy = rand.randint(-2,2)
+        self.atomPositions = self.calcAPos()
+
+    def calcAPos(self):
+        aCount = len(self.atomList)
+        positions = []
+        gap = 2*math.pi / aCount
+
+        radius = mSize
+
+        for i in range(aCount):
+            angle = i * gap
+            offset_x = int(radius * math.cos(angle))
+            offset_y = int(radius * math.sin(angle))
+            positions.append((offset_x, offset_y))
+
+        return positions
+
 
 class MoleculeHandler: # Class to handle molecules, keeps track of every molecule and combination as well as the current molecule you are supposed to make
     def __init__(self):
@@ -84,12 +114,40 @@ class MoleculeHandler: # Class to handle molecules, keeps track of every molecul
                              "Ethanol": ["Carbon", "Carbon", "Oxygen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen",  "Hydrogen"],
                              "Glucose": ["Carbon", "Carbon", "Carbon", "Carbon", "Carbon", "Carbon", "Oxygen", "Oxygen", "Oxygen",  "Oxygen", "Oxygen", "Oxygen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen",  "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen", "Hydrogen"]
         }
+        self.mList = []
         self.curMol = self.molecules[rand.randint(0,len(self.molecules)-1)]
+        self.aColors = {"Hydrogen": (255, 255, 255),
+            "Oxygen": (255, 0, 0),
+            "Carbon": (0, 0, 255)}
 
     def newMol(self):
         self.curMol = self.molecules[rand.randint(0,len(self.molecules)-1)]
         self.curComb = self.combinations[self.curMol]
         print(self.curComb)
+
+    def createMol(self, atoms, x, y):
+        molecule = Molecule(atoms, x, y)
+        self.mList.append(molecule)
+    
+    def updateMols(self, screen):
+        for mol in self.mList:
+            if mol.centerx + mol.dx - mSize <= screen.left or mol.centerx + mol.dx + mSize >= screen.right:
+                mol.dx = -(mol.dx)
+            if mol.centery + mol.dy - mSize <= screen.top or mol.centery + mol.dy + mSize >= screen.bottom:
+                mol.dy = -(mol.dy)
+            mol.centerx += mol.dx
+            mol.centery += mol.dy
+
+
+    def drawMols(self, screen):
+        for mol in self.mList:
+            for i, atom_type in enumerate(mol.atomList):
+                offset_x, offset_y = mol.atomPositions[i]
+                atom_x = mol.centerx + offset_x
+                atom_y = mol.centery + offset_y
+                atom_color = self.aColors[atom_type]
+                game.draw.circle(screen, atom_color, (atom_x, atom_y), aSize)
+
 
 class Main: # Class definition of the main program.
     def __init__(self): # Starts on initialization of an object
@@ -97,6 +155,7 @@ class Main: # Class definition of the main program.
         game.init()
         self.molecule = MoleculeHandler()
         self.atomH = AtomHandler()
+        self.molH = MoleculeHandler()
         self.binding = False
         self.screen = game.display.set_mode((window_x, window_y))
         game.display.set_caption("Moleculez")
@@ -186,12 +245,14 @@ class Main: # Class definition of the main program.
             for button in [self.atom1Button, self.atom2Button, self.atom3Button]:
                 game.draw.rect(self.screen,(100,200,100), button.rect.inflate(100, 100), 4)
 
-            self.atomH.drawAtoms(self.screen)
-            self.atomH.updateAtom(self.gameScreen, self.screen)
             if self.binding == True and self.binding1 != "None" and self.binding2 == "None":
                 game.draw.line(self.screen, "White", (self.binding1.x_pos, self.binding1.y_pos), game.mouse.get_pos(), 5)
             elif self.binding1 != "None" and self.binding2 != "None":
                 game.draw.line(self.screen, "White", (self.binding1.x_pos, self.binding1.y_pos), (self.binding2.x_pos, self.binding2.y_pos), 5)
+            self.atomH.drawAtoms(self.screen)
+            self.atomH.updateAtom(self.gameScreen, self.screen, self.binding1, self.binding2, self.molH, self.removeBind)
+            self.molH.drawMols(self.screen)
+            self.molH.updateMols(self.gameScreen)
 
             self.update()
 
@@ -211,6 +272,10 @@ class Main: # Class definition of the main program.
             self.binding1 = "None"
             self.binding2 = "None"
 
+    def removeBind(self):
+        self.binding1 = "None"
+        self.binding2 = "None"
+
     def handleMouseEvents(self, pos):
         mouse_pos = pos
 
@@ -221,6 +286,9 @@ class Main: # Class definition of the main program.
                         self.binding1 = atom;self.binding2 = "None"
                     elif self.binding1 != "None":
                         self.binding2 = atom
+                        self.binding1.dx = (self.binding2.x_pos - self.binding1.x_pos) / 500
+                        self.binding1.dy = (self.binding2.y_pos - self.binding1.y_pos) / 500
+                        self.binding2.dx= 0; self.binding2.dy = 0
                         self.binding = False
                         print("Bind made!")
                     else:
